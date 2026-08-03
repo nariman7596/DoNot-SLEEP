@@ -26,6 +26,8 @@ dependencies = []
 [project.optional-dependencies]
 # Cursor mode needs pyautogui:  pip install "keep-awake[cursor]"
 cursor = ["pyautogui>=0.9.53"]
+# Test tooling:  pip install "keep-awake[test]"  (tests also run under unittest)
+test = ["pytest>=7.0"]
 
 [project.scripts]
 keep-awake = "keep_awake.cli:main"
@@ -36,3 +38,6 @@ Repository = "https://github.com/nariman7596/DoNot-SLEEP"
 
 [tool.setuptools]
 packages = ["keep_awake"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

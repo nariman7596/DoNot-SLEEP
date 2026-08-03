@@ -87,6 +87,22 @@ computer can sleep normally again.
 > mode's `pyautogui` needs an X11 display and won't work on Wayland or
 > headless systems.
 
+## Running the tests
+
+The test suite uses only the standard library, so it runs without any extra
+tooling:
+
+```bash
+python -m unittest discover
+```
+
+It's also pytest-compatible if you prefer:
+
+```bash
+pip install ".[test]"
+pytest
+```
+
 ## Use as a library
 
 The native inhibitor is also usable as a context manager:
