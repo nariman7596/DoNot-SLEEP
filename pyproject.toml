@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "keep-awake"
+version = "1.0.0"
+description = "Keep the computer awake via native OS power APIs or cursor movement."
+readme = "README.md"
+requires-python = ">=3.7"
+license = { text = "MIT" }
+authors = [{ name = "DoNot-SLEEP" }]
+keywords = ["sleep", "caffeinate", "insomnia", "power", "keep-awake"]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Utilities",
+]
+
+# Native mode has no dependencies (standard library only).
+dependencies = []
+
+[project.optional-dependencies]
+# Cursor mode needs pyautogui:  pip install "keep-awake[cursor]"
+cursor = ["pyautogui>=0.9.53"]
+
+[project.scripts]
+keep-awake = "keep_awake.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/nariman7596/DoNot-SLEEP"
+Repository = "https://github.com/nariman7596/DoNot-SLEEP"
+
+[tool.setuptools]
+packages = ["keep_awake"]

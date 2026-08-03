@@ -1,6 +1,6 @@
 # DoNot-SLEEP
 
-A single Python utility, `keep_awake.py`, that keeps your computer awake. It
+`keep-awake` is a small cross-platform CLI that keeps your computer awake. It
 offers two strategies selectable with `--mode`:
 
 1. **`native`** (default) — asks the operating system directly to stay awake
@@ -8,6 +8,19 @@ offers two strategies selectable with `--mode`:
    the mouse. No third-party dependencies.
 2. **`cursor`** — nudges the mouse cursor on a fixed interval (30 seconds by
    default) so the OS idle timer keeps resetting. Requires `pyautogui`.
+
+## Install
+
+```bash
+# Native mode only (no extra dependencies)
+pip install .
+
+# Include cursor mode (pulls in pyautogui)
+pip install ".[cursor]"
+```
+
+This installs a `keep-awake` command on your PATH. During development you can
+use an editable install with `pip install -e ".[cursor]"`.
 
 ## Which mode should I use?
 
@@ -29,35 +42,32 @@ specifically want the cursor-movement behavior.
 original position on each interval. The net cursor position is unchanged, but
 the OS registers the movement as activity.
 
-## Requirements
-
-- Python 3.7+
-- Native mode: **no dependencies** (standard library only)
-- Cursor mode: [`pyautogui`](https://pypi.org/project/pyautogui/)
-
-Install the optional cursor-mode dependency:
-
-```bash
-pip install -r requirements.txt
-```
-
 ## Usage
 
 ```bash
 # Native mode, stay awake until Ctrl+C (default)
-python keep_awake.py
+keep-awake
 
 # Native mode for a fixed duration (e.g. 1 hour)
-python keep_awake.py --duration 3600
+keep-awake --duration 3600
 
 # Native mode, also keep the display/screen on
-python keep_awake.py --display
+keep-awake --display
 
 # Cursor mode, nudge every 30 seconds (default interval)
-python keep_awake.py --mode cursor
+keep-awake --mode cursor
 
 # Cursor mode with a custom interval, e.g. every 60 seconds
-python keep_awake.py --mode cursor --interval 60
+keep-awake --mode cursor --interval 60
+
+# Print the version
+keep-awake --version
+```
+
+You can also run it without installing:
+
+```bash
+python -m keep_awake.cli --mode cursor
 ```
 
 Press `Ctrl+C` to stop (when no `--duration` is given). Once stopped, the
@@ -67,6 +77,7 @@ computer can sleep normally again.
 
 | Flag | Applies to | Description |
 | ---- | ---------- | ----------- |
+| `-V`, `--version` | — | Print the version and exit. |
 | `-m`, `--mode {native,cursor}` | both | Strategy to use (default: `native`). |
 | `-d`, `--duration SECONDS` | both | Stay awake for a fixed time, then exit. |
 | `-i`, `--interval SECONDS` | cursor | Seconds between cursor nudges (default: 30). |
@@ -75,3 +86,14 @@ computer can sleep normally again.
 > **Linux notes:** Native mode relies on `systemd-inhibit` (systemd). Cursor
 > mode's `pyautogui` needs an X11 display and won't work on Wayland or
 > headless systems.
+
+## Use as a library
+
+The native inhibitor is also usable as a context manager:
+
+```python
+from keep_awake import NativeInhibitor
+
+with NativeInhibitor(keep_display_on=True):
+    do_long_running_work()   # the machine stays awake in here
+```

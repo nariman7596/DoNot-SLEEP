@@ -13,11 +13,12 @@ Choose a strategy with --mode:
                        idle timer keeps resetting. Requires `pyautogui`.
 
 Usage:
-    python keep_awake.py                          # native mode, until Ctrl+C
-    python keep_awake.py --mode cursor            # jiggle cursor every 30s
-    python keep_awake.py --mode cursor -i 60      # jiggle every 60 seconds
-    python keep_awake.py --duration 3600          # native, stay awake 1 hour
-    python keep_awake.py --display                # also keep the screen on
+    keep-awake                          # native mode, until Ctrl+C
+    keep-awake --mode cursor            # jiggle cursor every 30s
+    keep-awake --mode cursor -i 60      # jiggle every 60 seconds
+    keep-awake --duration 3600          # native, stay awake 1 hour
+    keep-awake --display                # also keep the screen on
+    keep-awake --version                # print version and exit
 
 Press Ctrl+C to stop (when no duration is given).
 """
@@ -66,13 +67,13 @@ class NativeInhibitor:
         if shutil.which("systemd-inhibit") is None:
             raise RuntimeError(
                 "systemd-inhibit not found. On Linux, native mode relies on "
-                "systemd. Try:  python keep_awake.py --mode cursor"
+                "systemd. Try:  keep-awake --mode cursor"
             )
         what = "idle:sleep" if self.keep_display_on else "sleep"
         cmd = [
             "systemd-inhibit",
             f"--what={what}",
-            "--who=keep_awake.py",
+            "--who=keep-awake",
             "--why=Keep the computer awake",
             "--mode=block",
             "sleep",
@@ -104,6 +105,13 @@ class NativeInhibitor:
             except subprocess.TimeoutExpired:
                 self._process.kill()
             self._process = None
+
+    def __enter__(self) -> "NativeInhibitor":
+        self.start()
+        return self
+
+    def __exit__(self, *exc) -> None:
+        self.stop()
 
 
 def run_native(args: argparse.Namespace) -> None:
@@ -140,8 +148,8 @@ def run_cursor(args: argparse.Namespace) -> None:
     except ImportError:
         sys.exit(
             "Cursor mode needs the 'pyautogui' package.\n"
-            "Install it with:  pip install pyautogui\n"
-            "Or use native mode:  python keep_awake.py --mode native"
+            "Install it with:  pip install 'keep-awake[cursor]'\n"
+            "Or use native mode:  keep-awake --mode native"
         )
 
     # We move by only 1px and back, so disable the corner fail-safe.
@@ -174,10 +182,19 @@ def run_cursor(args: argparse.Namespace) -> None:
 # --------------------------------------------------------------------------
 # CLI
 # --------------------------------------------------------------------------
-def parse_args() -> argparse.Namespace:
+def parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
+    from . import __version__
+
     parser = argparse.ArgumentParser(
+        prog="keep-awake",
         description="Keep the computer awake using a native OS power API or "
-        "by nudging the mouse cursor."
+        "by nudging the mouse cursor.",
+    )
+    parser.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
     )
     parser.add_argument(
         "-m",
@@ -205,11 +222,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Native mode only: also keep the display awake.",
     )
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
-def main() -> None:
-    args = parse_args()
+def main(argv: "list[str] | None" = None) -> None:
+    args = parse_args(argv)
     if args.mode == "cursor":
         run_cursor(args)
     else:
