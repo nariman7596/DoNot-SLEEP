@@ -146,7 +146,7 @@ def run_cursor(args: argparse.Namespace) -> None:
             "Or use native mode:  python3 keepawake.py --mode native"
         )
 
-    # We move by only 1px and back, so disable the corner fail-safe.
+    # We move by 100px and back, so disable the corner fail-safe.
     pyautogui.FAILSAFE = False
     interval = args.interval
 
@@ -159,7 +159,7 @@ def run_cursor(args: argparse.Namespace) -> None:
     try:
         while True:
             x, y = pyautogui.position()
-            pyautogui.moveRel(1, 0, duration=0)
+            pyautogui.moveRel(100, 0, duration=0)
             pyautogui.moveTo(x, y, duration=0)
             print(f"[{time.strftime('%H:%M:%S')}] cursor nudged", flush=True)
 

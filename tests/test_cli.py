@@ -230,7 +230,7 @@ class RunCursorTests(unittest.TestCase):
              mock.patch.object(cli.time, "sleep") as sleep:
             cli.run_cursor(args)
         # One nudge happened, and the cursor was returned to its origin.
-        fake.moveRel.assert_called_once_with(1, 0, duration=0)
+        fake.moveRel.assert_called_once_with(100, 0, duration=0)
         fake.moveTo.assert_called_once_with(100, 200, duration=0)
         # duration=0 means it breaks before sleeping.
         sleep.assert_not_called()

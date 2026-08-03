@@ -38,7 +38,7 @@ specifically want the cursor-movement behavior.
 | Windows  | `SetThreadExecutionState` (via `ctypes`) |
 | Linux    | `systemd-inhibit` (requires systemd) |
 
-**Cursor mode** moves the cursor 1 pixel and immediately moves it back to its
+**Cursor mode** moves the cursor 100 pixels and immediately moves it back to its
 original position on each interval. The net cursor position is unchanged, but
 the OS registers the movement as activity.
 
